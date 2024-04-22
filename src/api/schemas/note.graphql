@@ -1,0 +1,21 @@
+type Note {
+  id: ID!
+  owner: User!
+  collaborators: [ID]
+  title: String!
+  content: String!
+}
+
+type Query {
+  noteById(id: ID!): Note
+  ownedNotes: [Note]
+  sharedNotes: [Note]
+}
+
+type Mutation {
+  createNote(title: String!, content: String!): Note
+  updateNote(id: ID!, title: String, content: String): Note
+  deleteNote: Note
+  shareNoteWithUser(id: ID!): Note
+  unshareNoteWithUser(id: ID!): Note
+}
