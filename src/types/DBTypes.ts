@@ -4,14 +4,45 @@ type User = Partial<Document> & {
   id: Types.ObjectId | string;
   user_name: string;
   email: string;
-  role: 'user' | 'admin';
   password: string;
+  filename: string;
 };
-type LoginUser = Omit<User, 'password'>;
+
+type UserInput = Omit<User, 'id'>;
+
+type UserOutput = Omit<User, 'password'>;
 
 type TokenContent = {
   token: string;
-  user: LoginUser;
+  user: UserOutput;
 };
 
-export {User, LoginUser, TokenContent};
+type Note = Partial<Document> & {
+  id: Types.ObjectId | string;
+  owner: Types.ObjectId | User;
+  collaborators: Types.ObjectId[] | User[];
+  title: string;
+  content: string;
+};
+
+type Board = Partial<Document> & {
+  id: Types.ObjectId | string;
+  owner: User;
+  collaborators: Types.ObjectId[] | User[];
+  title: string;
+};
+
+type List = Partial<Document> & {
+  id: Types.ObjectId | string;
+  board: Board;
+  title: string;
+};
+
+type Card = Partial<Document> & {
+  id: Types.ObjectId | string;
+  list: List;
+  title: string;
+  content: string;
+};
+
+export {User, UserInput, UserOutput, TokenContent, Note, Board, List, Card};

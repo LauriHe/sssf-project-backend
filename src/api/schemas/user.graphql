@@ -5,13 +5,13 @@ type User {
   filename: String
 }
 
-type LoginResponse {
+type LoginMessage {
   token: String
   message: String!
   user: User
 }
 
-type UserResponse {
+type UserMessage {
   message: String!
   user: User
 }
@@ -37,20 +37,13 @@ input UserModify {
 type Query {
   users: [User]
   userById(id: ID!): User
-  checkToken: UserResponse
+  userByName(user_name: String!): User
+  checkToken: UserMessage
 }
 
 type Mutation {
-  login(credentials: Credentials!): LoginResponse
-  register(user: UserInput!): UserResponse
-  updateUser(user: UserModify!): UserResponse
-  deleteUser: UserResponse
-  """
-  Separate mutations for admin because of rest api
-  """
-  updateUserAsAdmin(user: UserModify!, id: ID!): UserResponse
-  """
-  Separate mutations for admin because of rest api
-  """
-  deleteUserAsAdmin(id: ID!): UserResponse
+  login(credentials: Credentials!): LoginMessage
+  register(user: UserInput!): UserMessage
+  updateUser(user: UserModify!): UserMessage
+  deleteUser: UserMessage
 }

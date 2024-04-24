@@ -12,10 +12,15 @@ type Query {
   sharedNotes: [Note]
 }
 
+type NoteMessage {
+  message: String!
+  note: Note
+}
+
 type Mutation {
-  createNote(title: String!, content: String!): Note
-  updateNote(id: ID!, title: String, content: String): Note
-  deleteNote: Note
-  shareNoteWithUser(id: ID!): Note
-  unshareNoteWithUser(id: ID!): Note
+  createNote(title: String!, content: String): NoteMessage
+  updateNote(id: ID!, title: String, content: String): NoteMessage
+  deleteNote(id: ID!): String
+  shareNoteWithUser(note_id: ID!, user_id: ID!): NoteMessage
+  unshareNoteWithUser(note_id: ID!, user_id: ID!): NoteMessage
 }

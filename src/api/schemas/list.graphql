@@ -1,0 +1,21 @@
+type List {
+  id: ID!
+  board: Board!
+  title: String!
+}
+
+type Query {
+  listById(id: ID!): List
+  listsByBoard(board_id: ID!): [List]
+}
+
+type ListMessage {
+  message: String!
+  list: List
+}
+
+type Mutation {
+  createList(board_id: ID!, title: String!): ListMessage
+  updateList(id: ID!, title: String): ListMessage
+  deleteList(id: ID!): string
+}

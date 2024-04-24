@@ -1,0 +1,25 @@
+type Board {
+  id: ID!
+  owner: User!
+  collaborators: [ID]
+  title: String!
+}
+
+type Query {
+  boardById(id: ID!): Board
+  ownedBoards: [Board]
+  sharedBoards: [Board]
+}
+
+type BoardMessage {
+  message: String!
+  board: Board
+}
+
+type Mutation {
+  createBoard(title: String!): BoardMessage
+  updateBoard(id: ID!, title: String): BoardMessage
+  deleteBoard(id: ID!): BoardMessage
+  shareBoardWithUser(board_id: ID!, user_id: ID!): BoardMessage
+  unshareBoardWithUser(board_id: ID!, user_id: ID!): BoardMessage
+}

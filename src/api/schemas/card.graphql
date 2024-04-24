@@ -1,0 +1,22 @@
+type Card {
+  id: ID!
+  list: List!
+  title: String!
+  content: String!
+}
+
+type Query {
+  cardById(id: ID!): Card
+  cardsByList(list_id: ID!): [Card]
+}
+
+type CardMessage {
+  message: String!
+  card: Card
+}
+
+type Mutation {
+  createCard(list_id: ID!, title: String!, content: String): CardMessage
+  updateCard(id: ID!, title: String, content: String): CardMessage
+  deleteCard(id: ID!): CardMessage
+}
