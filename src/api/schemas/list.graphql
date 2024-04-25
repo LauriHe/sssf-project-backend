@@ -17,5 +17,5 @@ type ListMessage {
 type Mutation {
   createList(board_id: ID!, title: String!): ListMessage
   updateList(id: ID!, title: String): ListMessage
-  deleteList(id: ID!): string
+  deleteList(id: ID!): String
 }

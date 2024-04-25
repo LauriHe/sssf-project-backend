@@ -5,7 +5,7 @@ import {MyContext} from '../../types/MyContext';
 import {BoardMessage} from '../../types/MessageTypes';
 
 export default {
-  Qyery: {
+  Query: {
     boardById: async (
       _parent: undefined,
       args: {id: string},

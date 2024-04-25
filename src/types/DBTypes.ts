@@ -9,9 +9,9 @@ type User = Partial<Document> & {
 };
 
 type UserInput = Omit<User, 'id'>;
-
 type UserOutput = Omit<User, 'password'>;
 type LoginUser = Omit<User, 'password'>;
+type UserTest = Partial<User>;
 
 type TokenContent = {
   token: string;
@@ -51,6 +51,7 @@ export {
   UserInput,
   UserOutput,
   LoginUser,
+  UserTest,
   TokenContent,
   Note,
   Board,

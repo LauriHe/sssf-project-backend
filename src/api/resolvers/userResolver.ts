@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql';
-import {User, UserInput, UserOutput} from '../../types/DBTypes';
+import {UserInput, UserOutput} from '../../types/DBTypes';
 import userModel from '../models/userModel';
 import fetchData from '../../functions/fetchData';
 import {LoginMessage, UserMessage} from '../../types/MessageTypes';
@@ -7,19 +7,24 @@ import {MyContext} from '../../types/MyContext';
 
 export default {
   Query: {
-    users: async (): Promise<User[]> => {
-      return userModel.find();
+    users: async (): Promise<UserOutput[]> => {
+      return userModel.find().select('-password');
     },
-    userById: async (_parent: undefined, args: {id: string}): Promise<User> => {
-      const user = await userModel.findById(args.id);
+    userById: async (
+      _parent: undefined,
+      args: {id: string},
+    ): Promise<UserOutput> => {
+      const user = await userModel.findById(args.id).select('-password');
       if (!user) throw new GraphQLError('User not found');
       return user;
     },
     userByName: async (
       _parent: undefined,
       args: {user_name: string},
-    ): Promise<User> => {
-      const user = await userModel.findOne({user_name: args.user_name});
+    ): Promise<UserOutput> => {
+      const user = await userModel
+        .findOne({user_name: args.user_name})
+        .select('-password');
       if (!user) throw new GraphQLError('User not found');
       return user;
     },

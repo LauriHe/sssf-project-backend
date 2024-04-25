@@ -18,8 +18,8 @@ type BoardMessage {
 
 type Mutation {
   createBoard(title: String!): BoardMessage
-  updateBoard(id: ID!, title: String): BoardMessage
-  deleteBoard(id: ID!): BoardMessage
+  updateBoard(id: ID!, title: String!): BoardMessage
+  deleteBoard(id: ID!): String
   shareBoardWithUser(board_id: ID!, user_id: ID!): BoardMessage
   unshareBoardWithUser(board_id: ID!, user_id: ID!): BoardMessage
 }
