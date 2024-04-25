@@ -45,5 +45,5 @@ type Mutation {
   login(credentials: Credentials!): LoginMessage
   register(user: UserInput!): UserMessage
   updateUser(user: UserModify!): UserMessage
-  deleteUser: UserMessage
+  deleteUser: String
 }

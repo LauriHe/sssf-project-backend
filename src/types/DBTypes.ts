@@ -26,6 +26,8 @@ type Note = Partial<Document> & {
   content: string;
 };
 
+type NoteTest = Partial<Note>;
+
 type Board = Partial<Document> & {
   id: Types.ObjectId | string;
   owner: User;
@@ -33,11 +35,15 @@ type Board = Partial<Document> & {
   title: string;
 };
 
+type BoardTest = Partial<Board>;
+
 type List = Partial<Document> & {
   id: Types.ObjectId | string;
   board: Board;
   title: string;
 };
+
+type ListTest = Partial<List>;
 
 type Card = Partial<Document> & {
   id: Types.ObjectId | string;
@@ -45,6 +51,8 @@ type Card = Partial<Document> & {
   title: string;
   content: string;
 };
+
+type CardTest = Partial<Card>;
 
 export {
   User,
@@ -54,7 +62,11 @@ export {
   UserTest,
   TokenContent,
   Note,
+  NoteTest,
   Board,
+  BoardTest,
   List,
+  ListTest,
   Card,
+  CardTest,
 };

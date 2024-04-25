@@ -113,18 +113,12 @@ export default {
       _parent: undefined,
       args: {},
       contextValue: MyContext,
-    ): Promise<UserMessage> => {
+    ): Promise<string> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const id = contextValue.userdata.user.id;
       const response = await userModel.findByIdAndDelete(id);
       if (!response) throw new GraphQLError('User not found');
-      const user: UserOutput = {
-        id: response._id,
-        user_name: response.user_name,
-        email: response.email,
-        filename: response.filename,
-      };
-      return {message: 'User deleted', user};
+      return 'User deleted';
     },
   },
 };
