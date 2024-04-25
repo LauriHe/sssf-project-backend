@@ -9,9 +9,14 @@ export default {
     boardById: async (
       _parent: undefined,
       args: {id: string},
+      contextValue: MyContext,
     ): Promise<Board> => {
+      if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
+      const userId = contextValue.userdata.user.id;
       const board = await boardModel.findById(args.id);
       if (!board) throw new GraphQLError('Board not found');
+      if (board.owner !== userId && !board.collaborators.includes(userId))
+        throw new GraphQLError('Not authorized');
       return board;
     },
     ownedBoards: async (

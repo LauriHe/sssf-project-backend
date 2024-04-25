@@ -6,9 +6,17 @@ import {NoteMessage} from '../../types/MessageTypes';
 
 export default {
   Query: {
-    noteById: async (_parent: undefined, args: {id: string}): Promise<Note> => {
+    noteById: async (
+      _parent: undefined,
+      args: {id: string},
+      contextValue: MyContext,
+    ): Promise<Note> => {
+      if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
+      const userId = contextValue.userdata.user.id;
       const note = await noteModel.findById(args.id);
       if (!note) throw new GraphQLError('Note not found');
+      if (note.owner._id !== userId && !note.collaborators.includes(userId))
+        throw new GraphQLError('Not authorized');
       return note;
     },
     ownedNotes: async (
@@ -70,7 +78,7 @@ export default {
       const noteInfo = await noteModel.findById(args.id);
       if (!noteInfo) throw new GraphQLError('Note not found');
       if (
-        noteInfo.owner._id !== userId ||
+        noteInfo.owner._id !== userId &&
         !noteInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');

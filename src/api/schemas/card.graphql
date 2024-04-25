@@ -18,5 +18,5 @@ type CardMessage {
 type Mutation {
   createCard(list_id: ID!, title: String!, content: String): CardMessage
   updateCard(id: ID!, title: String, content: String): CardMessage
-  deleteCard(id: ID!): CardMessage
+  deleteCard(id: ID!): String
 }
