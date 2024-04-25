@@ -1,5 +1,17 @@
 import {Board, Card, List, Note, UserOutput} from './DBTypes';
 
+type MessageResponse = {
+  message: string;
+};
+
+type UploadResponse = MessageResponse & {
+  filename: string;
+};
+
+type ErrorResponse = MessageResponse & {
+  stack?: string;
+};
+
 type UserMessage = Partial<Document> & {
   message: string;
   user?: UserOutput;
@@ -32,6 +44,8 @@ type CardMessage = Partial<Document> & {
 };
 
 export {
+  ErrorResponse,
+  UploadResponse,
   UserMessage,
   LoginMessage,
   NoteMessage,

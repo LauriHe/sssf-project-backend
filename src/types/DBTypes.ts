@@ -11,6 +11,7 @@ type User = Partial<Document> & {
 type UserInput = Omit<User, 'id'>;
 
 type UserOutput = Omit<User, 'password'>;
+type LoginUser = Omit<User, 'password'>;
 
 type TokenContent = {
   token: string;
@@ -45,4 +46,14 @@ type Card = Partial<Document> & {
   content: string;
 };
 
-export {User, UserInput, UserOutput, TokenContent, Note, Board, List, Card};
+export {
+  User,
+  UserInput,
+  UserOutput,
+  LoginUser,
+  TokenContent,
+  Note,
+  Board,
+  List,
+  Card,
+};

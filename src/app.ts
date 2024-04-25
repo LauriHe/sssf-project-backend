@@ -1,6 +1,7 @@
 /* eslint-disable node/no-extraneous-import */
 require('dotenv').config();
 import express from 'express';
+import api from './api';
 import helmet from 'helmet';
 import cors from 'cors';
 import {ApolloServer} from '@apollo/server';
@@ -13,7 +14,7 @@ import {
 } from '@apollo/server/plugin/landingPage/default';
 import {notFound, errorHandler} from './middlewares';
 import authenticate from './functions/authenticate';
-import {createRateLimitRule} from 'graphql-rate-limit';
+//import {createRateLimitRule} from 'graphql-rate-limit';
 import {shield} from 'graphql-shield';
 import {makeExecutableSchema} from '@graphql-tools/schema';
 import {applyMiddleware} from 'graphql-middleware';
@@ -31,9 +32,9 @@ app.use(
 (async () => {
   try {
     // TODO Create a rate limit rule instance (not WSK2 course)
-    const rateLimitRule = createRateLimitRule({
+    /*const rateLimitRule = createRateLimitRule({
       identifyContext: (ctx) => ctx.id,
-    });
+    });*/
 
     // TODO Create a permissions object (not WSK2 course)
     const permissions = shield({
@@ -75,7 +76,7 @@ app.use(
         context: async ({req}) => authenticate(req),
       }),
     );
-
+    app.use('/api/', api);
     app.use(notFound);
     app.use(errorHandler);
   } catch (error) {
