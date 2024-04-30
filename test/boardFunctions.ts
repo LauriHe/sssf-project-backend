@@ -415,6 +415,166 @@ const deleteBoard = (
   });
 };
 
+// add test for graphql mutation
+/*
+  ShareBoard($boardId: ID!, $userId: ID!) {
+    shareBoardWithUser(board_id: $boardId, user_id: $userId) {
+      message
+      board {
+        id
+        title
+        owner {
+          id
+          user_name
+          email
+          filename
+        }
+        collaborators {
+          id
+          user_name
+          email
+          filename
+        }
+      }
+    }
+  }
+*/
+
+const shareBoard = (
+  url: string | Application,
+  boardId: string,
+  userId: string,
+  token: string,
+): Promise<BoardTest> => {
+  return new Promise((resolve, reject) => {
+    request(url)
+      .post('/graphql')
+      .set('Content-type', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        query: `mutation ShareBoard($boardId: ID!, $userId: ID!) {
+          shareBoardWithUser(board_id: $boardId, user_id: $userId) {
+            message
+            board {
+              id
+              title
+              owner {
+                id
+                user_name
+                email
+                filename
+              }
+              collaborators {
+                id
+                user_name
+                email
+                filename
+              }
+            }
+          }
+        }`,
+        variables: {
+          boardId,
+          userId,
+        },
+      })
+      .expect(200, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          const board = response.body.data.shareBoardWithUser.board;
+          expect(board).toHaveProperty('id');
+          expect(board).toHaveProperty('title');
+          expect(board).toHaveProperty('owner');
+          expect(board.owner).toHaveProperty('id');
+          expect(board).toHaveProperty('collaborators');
+          expect(board.collaborators).toBeInstanceOf(Array);
+          resolve(board);
+        }
+      });
+  });
+};
+
+// add test for graphql mutation
+/*
+  UnshareBoard($boardId: ID!, $userId: ID!) {
+    unshareBoardWithUser(board_id: $boardId, user_id: $userId) {
+      message
+      board {
+        id
+        title
+        owner {
+          id
+          user_name
+          email
+          filename
+        }
+        collaborators {
+          id
+          user_name
+          email
+          filename
+        }
+      }
+    }
+  }
+*/
+
+const unshareBoard = (
+  url: string | Application,
+  boardId: string,
+  userId: string,
+  token: string,
+): Promise<BoardTest> => {
+  return new Promise((resolve, reject) => {
+    request(url)
+      .post('/graphql')
+      .set('Content-type', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        query: `mutation UnshareBoard($boardId: ID!, $userId: ID!) {
+          unshareBoardWithUser(board_id: $boardId, user_id: $userId) {
+            message
+            board {
+              id
+              title
+              owner {
+                id
+                user_name
+                email
+                filename
+              }
+              collaborators {
+                id
+                user_name
+                email
+                filename
+              }
+            }
+          }
+        }`,
+        variables: {
+          boardId,
+          userId,
+        },
+      })
+      .expect(200, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          const board = response.body.data.unshareBoardWithUser.board;
+          expect(board).toHaveProperty('id');
+          expect(board).toHaveProperty('title');
+          expect(board).toHaveProperty('owner');
+          expect(board.owner).toHaveProperty('id');
+          expect(board).toHaveProperty('collaborators');
+          expect(board.collaborators).toBeInstanceOf(Array);
+          resolve(board);
+        }
+      });
+  });
+};
+
 export {
   getBoard,
   getOwnedBoards,
@@ -422,4 +582,6 @@ export {
   createBoard,
   updateBoard,
   deleteBoard,
+  shareBoard,
+  unshareBoard,
 };

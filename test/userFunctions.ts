@@ -154,14 +154,10 @@ const loginUser = (
   });
 };
 
-const postFile = (
-  url: string | Application,
-  token: string,
-): Promise<UploadResponse> => {
+const postFile = (url: string | Application): Promise<UploadResponse> => {
   return new Promise((resolve, reject) => {
     request(url)
       .post('/upload')
-      .set('Authorization', `Bearer ${token}`)
       .attach('image', 'test/test.jpeg')
       .expect(200, (err, response) => {
         if (err) {
