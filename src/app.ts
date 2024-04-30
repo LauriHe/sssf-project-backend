@@ -76,7 +76,8 @@ app.use(
         context: async ({req}) => authenticate(req),
       }),
     );
-    app.use('/api/', api);
+    app.use(express.json());
+    app.use('/api', api);
     app.use(notFound);
     app.use(errorHandler);
   } catch (error) {

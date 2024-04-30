@@ -13,9 +13,14 @@ export default {
     ): Promise<Note> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const note = await noteModel.findById(args.id);
+      const note = await noteModel
+        .findById(args.id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!note) throw new GraphQLError('Note not found');
-      if (note.owner._id !== userId && !note.collaborators.includes(userId))
+      if (
+        String(note.owner._id) !== userId &&
+        !note.collaborators.includes(userId)
+      )
         throw new GraphQLError('Not authorized');
       return note;
     },
@@ -23,11 +28,15 @@ export default {
       _parent: undefined,
       contextValue: MyContext,
     ): Promise<Note[]> => {
+      console.log('testing');
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
-      const userId = contextValue.userdata.user.id;
+      console.log('testing2', contextValue.userdata.user);
+      const userId = contextValue.userdata.user;
+      console.log('omat');
       const notes = await noteModel
         .find({owner: userId})
-        .populate('owner', '_id user_name email filename');
+        .populate('owner collaborators', '_id user_name email filename');
+      console.log('nootit', notes);
       return notes;
     },
     sharedNotes: async (
@@ -38,7 +47,7 @@ export default {
       const userId = contextValue.userdata.user.id;
       const notes = await noteModel
         .find({collaborators: userId})
-        .populate('owner', '_id user_name email filename');
+        .populate('owner collaborators', '_id user_name email filename');
       return notes;
     },
   },

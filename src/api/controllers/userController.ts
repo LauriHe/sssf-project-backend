@@ -46,7 +46,7 @@ const userGet = async (
 };
 
 const userPost = async (
-  req: Request<{}, {}, Omit<User, 'user_id'>>,
+  req: Request<{}, {}, Omit<User, 'id'>>,
   res: Response<
     MessageResponse & {user: Pick<User, 'id' | 'user_name' | 'email'>}
   >,

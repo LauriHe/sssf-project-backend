@@ -165,8 +165,7 @@ const postFile = (url: string | Application): Promise<UploadResponse> => {
         } else {
           const uploadMessageResponse = response.body;
           expect(uploadMessageResponse).toHaveProperty('message');
-          expect(uploadMessageResponse).toHaveProperty('data');
-          expect(uploadMessageResponse.data).toHaveProperty('filename');
+          expect(uploadMessageResponse).toHaveProperty('filename');
           resolve(uploadMessageResponse);
         }
       });

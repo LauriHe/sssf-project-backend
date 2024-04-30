@@ -4,10 +4,10 @@ import listResolver from './listResolver';
 import noteResolver from './noteResolver';
 import userResolver from './userResolver';
 
-export default {
+export default [
   boardResolver,
   cardResolver,
   listResolver,
   noteResolver,
   userResolver,
-};
+];

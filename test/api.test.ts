@@ -47,7 +47,7 @@ import {
 const uploadApp = process.env.UPLOAD_URL as string;
 import randomstring from 'randomstring';
 import jwt from 'jsonwebtoken';
-import {LoginMessage, UploadResponse} from '../src/types/MessageTypes';
+import {LoginMessage} from '../src/types/MessageTypes';
 import {
   UserTest,
   NoteTest,
@@ -73,16 +73,15 @@ describe('Testing graphql api', () => {
   //test create user
   let userData: LoginMessage;
   let userData2: LoginMessage;
-  let adminData: LoginMessage;
 
-  let testUser: UserTest = {
+  const testUser: UserTest = {
     user_name: randomstring.generate(7),
     email: randomstring.generate(9) + '@user.fi',
     password: 'testpassword',
     filename: '',
   };
 
-  let testUser2: UserTest = {
+  const testUser2: UserTest = {
     user_name: 'Test User ' + randomstring.generate(7),
     email: randomstring.generate(9) + '@user.fi',
     password: 'testpassword',
@@ -90,13 +89,13 @@ describe('Testing graphql api', () => {
   };
 
   it('should post a image', async () => {
-    userData = await postFile(uploadApp);
-    testUser.filename = userData.user.filename;
+    const fileResult1 = await postFile(uploadApp);
+    testUser.filename = fileResult1.filename;
   });
 
   it('should post a second image', async () => {
-    userData2 = await postFile(uploadApp);
-    testUser2.filename = userData2.user.filename;
+    const fileResult2 = await postFile(uploadApp);
+    testUser2.filename = fileResult2.filename;
   });
 
   it('should create a new user', async () => {
@@ -140,10 +139,12 @@ describe('Testing graphql api', () => {
   });
 
   it('should return single user', async () => {
+    if (!userData.user) throw new Error('No user in response');
     await getSingleUser(app, userData.user.id!);
   });
 
   it('should return user by name', async () => {
+    if (!userData.user) throw new Error('No user in response');
     await getUserByName(app, userData.user.user_name!);
   });
 
@@ -233,10 +234,12 @@ describe('Testing graphql api', () => {
   });
 
   it('should share board', async () => {
+    if (!userData2.user) throw new Error('No user in response');
     await shareBoard(app, boardID1, userData2.user.id!, userData.token!);
   });
 
   it('should unshare board', async () => {
+    if (!userData2.user) throw new Error('No user in response');
     await unshareBoard(app, boardID1, userData2.user.id!, userData.token!);
   });
 

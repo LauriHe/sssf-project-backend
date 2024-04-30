@@ -7,19 +7,19 @@ import bcrypt from 'bcrypt';
 import MessageResponse from '../../interfaces/MessageResponse';
 
 const login = async (
-  req: Request<{}, {}, {username: string; password: string}>,
+  req: Request<{}, {}, {user_name: string; password: string}>,
   res: Response<MessageResponse & {token: string; user: UserOutput}>,
   next: NextFunction,
 ) => {
   try {
-    const {username, password} = req.body;
-    const user = await userModel.findOne({email: username});
+    const {user_name, password} = req.body;
+    const user = await userModel.findOne({user_name: user_name});
     if (!user) {
-      throw new CustomError('Username or password incorrect', 404);
+      throw new CustomError('username or password incorrect', 404);
     }
 
     if (!bcrypt.hashSync(password, user.password)) {
-      throw new CustomError('Username or password incorrect', 404);
+      throw new CustomError('username or password incorrect', 404);
     }
 
     if (!process.env.JWT_SECRET) {

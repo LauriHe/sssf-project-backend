@@ -140,6 +140,7 @@ const getOwnedNotes = (
           reject(err);
         } else {
           const notes = response.body.data.ownedNotes;
+          console.log('hello', response.body);
           notes.forEach((note: NoteTest) => {
             expect(note).toHaveProperty('id');
             expect(note).toHaveProperty('title');
