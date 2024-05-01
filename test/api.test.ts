@@ -356,4 +356,8 @@ describe('Testing graphql api', () => {
   it('should delete user', async () => {
     await deleteUser(app, userData.token!);
   });
+
+  it('should delete second user', async () => {
+    await deleteUser(app, userData2.token!);
+  });
 });
