@@ -13,32 +13,39 @@ export default {
     ): Promise<Board> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const board = await boardModel.findById(args.id);
+      const board = await boardModel
+        .findById(args.id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!board) throw new GraphQLError('Board not found');
-      if (board.owner !== userId && !board.collaborators.includes(userId))
+      if (
+        String(board.owner._id) !== userId &&
+        !board.collaborators.includes(userId)
+      )
         throw new GraphQLError('Not authorized');
       return board;
     },
     ownedBoards: async (
       _parent: undefined,
+      _args: undefined,
       contextValue: MyContext,
     ): Promise<Board[]> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const id = contextValue.userdata.user.id;
       const boards = await boardModel
         .find({owner: id})
-        .populate('owner', '_id user_name email filename');
+        .populate('owner collaborators', '_id user_name email filename');
       return boards;
     },
     sharedBoards: async (
       _parent: undefined,
+      _args: undefined,
       contextValue: MyContext,
     ): Promise<Board[]> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const id = contextValue.userdata.user.id;
       const boards = await boardModel
         .find({collaborators: id})
-        .populate('owner', '_id user_name email filename');
+        .populate('owner collaborators', '_id user_name email filename');
       return boards;
     },
   },
@@ -56,7 +63,7 @@ export default {
       };
       const response = await (
         await boardModel.create(input)
-      ).populate('owner', '_id user_name email filename');
+      ).populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Board not created');
       const board = {
         id: response._id,
@@ -75,12 +82,11 @@ export default {
       const userId = contextValue.userdata.user.id;
       const boardInfo = await boardModel.findById(args.id);
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (boardInfo.owner !== userId) throw new GraphQLError('Not authorized');
-      const response = await boardModel.findByIdAndUpdate(
-        args.id,
-        {title: args.title},
-        {new: true},
-      );
+      if (String(boardInfo.owner._id) !== userId)
+        throw new GraphQLError('Not authorized');
+      const response = await boardModel
+        .findByIdAndUpdate(args.id, {title: args.title}, {new: true})
+        .populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Board not updated');
       const newBoard = {
         id: response._id,
@@ -99,7 +105,8 @@ export default {
       const userId = contextValue.userdata.user.id;
       const boardInfo = await boardModel.findById(args.id);
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (boardInfo.owner !== userId) throw new GraphQLError('Not authorized');
+      if (String(boardInfo.owner._id) !== userId)
+        throw new GraphQLError('Not authorized');
       const response = await boardModel.findByIdAndDelete(args.id);
       if (!response) throw new GraphQLError('Board not deleted');
       return 'Board deleted';
@@ -113,12 +120,15 @@ export default {
       const userId = contextValue.userdata.user.id;
       const boardInfo = await boardModel.findById(args.board_id);
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (boardInfo.owner !== userId) throw new GraphQLError('Not authorized');
-      const response = await boardModel.findByIdAndUpdate(
-        args.board_id,
-        {$push: {collaborators: args.user_id}},
-        {new: true},
-      );
+      if (String(boardInfo.owner._id) !== userId)
+        throw new GraphQLError('Not authorized');
+      const response = await boardModel
+        .findByIdAndUpdate(
+          args.board_id,
+          {$push: {collaborators: args.user_id}},
+          {new: true},
+        )
+        .populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Board not shared');
       const board = {
         id: response._id,
@@ -137,12 +147,15 @@ export default {
       const userId = contextValue.userdata.user.id;
       const boardInfo = await boardModel.findById(args.board_id);
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (boardInfo.owner !== userId) throw new GraphQLError('Not authorized');
-      const response = await boardModel.findByIdAndUpdate(
-        args.board_id,
-        {$pull: {collaborators: args.user_id}},
-        {new: true},
-      );
+      if (String(boardInfo.owner._id) !== userId)
+        throw new GraphQLError('Not authorized');
+      const response = await boardModel
+        .findByIdAndUpdate(
+          args.board_id,
+          {$pull: {collaborators: args.user_id}},
+          {new: true},
+        )
+        .populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Board not unshared');
       const board = {
         id: response._id,

@@ -219,7 +219,7 @@ const postUser = (
 
 const putUser = (url: string | Application, token: string) => {
   return new Promise((resolve, reject) => {
-    const newValue = 'Test Loser ' + randomstring.generate(7);
+    const newValue = randomstring.generate(9) + '@user.fi';
     request(url)
       .post('/graphql')
       .set('Content-type', 'application/json')
@@ -238,7 +238,7 @@ const putUser = (url: string | Application, token: string) => {
         }`,
         variables: {
           user: {
-            user_name: newValue,
+            email: newValue,
           },
         },
       })
@@ -250,7 +250,7 @@ const putUser = (url: string | Application, token: string) => {
           expect(userData).toHaveProperty('message');
           expect(userData).toHaveProperty('user');
           expect(userData.user).toHaveProperty('id');
-          expect(userData.user.user_name).toBe(newValue);
+          expect(userData.user.email).toBe(newValue);
           resolve(response.body.data.updateUser);
         }
       });
@@ -267,9 +267,7 @@ const deleteUser = (
       .set('Authorization', 'Bearer ' + token)
       .send({
         query: `mutation DeleteUser {
-          deleteUser {
-            message
-          }
+          deleteUser
         }`,
       })
       .expect(200, (err, response) => {

@@ -396,9 +396,7 @@ const deleteBoard = (
       .set('Authorization', `Bearer ${token}`)
       .send({
         query: `mutation DeleteBoard($boardId: ID!) {
-          deleteBoard(id: $boardId) {
-            message
-          }
+          deleteBoard(id: $boardId)
         }`,
         variables: {
           boardId: id,

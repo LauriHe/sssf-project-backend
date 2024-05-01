@@ -140,7 +140,6 @@ const getOwnedNotes = (
           reject(err);
         } else {
           const notes = response.body.data.ownedNotes;
-          console.log('hello', response.body);
           notes.forEach((note: NoteTest) => {
             expect(note).toHaveProperty('id');
             expect(note).toHaveProperty('title');
@@ -399,6 +398,172 @@ const updateNote = (
 
 // add test for graphql query
 /*
+/*
+  mutation ShareNoteWithUser($noteId: ID!, $userId: ID!) {
+    shareNoteWithUser(note_id: $noteId, user_id: $userId) {
+      message
+    note {
+      _id
+      title
+      content
+      owner {
+        _id
+        user_name
+        email
+        filename
+      }
+      collaborators {
+        _id
+        user_name
+        email
+        filename
+      }
+    }
+  }
+*/
+
+const shareNoteWithUser = (
+  url: string | Application,
+  noteId: string,
+  userId: string,
+  token: string,
+): Promise<NoteTest> => {
+  return new Promise((resolve, reject) => {
+    request(url)
+      .post('/graphql')
+      .set('Content-type', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        query: `mutation ShareNoteWithUser($noteId: ID!, $userId: ID!) {
+          shareNoteWithUser(note_id: $noteId, user_id: $userId) {
+            message
+            note {
+              id
+              title
+              content
+              owner {
+                id
+                user_name
+                email
+                filename
+              }
+              collaborators {
+                id
+                user_name
+                email
+                filename
+              }
+            }
+          }
+        }`,
+        variables: {
+          noteId: noteId,
+          userId: userId,
+        },
+      })
+      .expect(200, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          const note = response.body.data.shareNoteWithUser.note;
+          expect(note).toHaveProperty('id');
+          expect(note).toHaveProperty('title');
+          expect(note).toHaveProperty('content');
+          expect(note).toHaveProperty('owner');
+          expect(note.owner).toHaveProperty('id');
+          expect(note).toHaveProperty('collaborators');
+          expect(note.collaborators).toBeInstanceOf(Array);
+          resolve(note);
+        }
+      });
+  });
+};
+
+// add test for graphql query
+/*
+mutation UnshareNoteWithUser($noteId: ID!, $userId: ID!) {
+  unshareNoteWithUser(note_id: $noteId, user_id: $userId) {
+    message
+    note {
+      _id
+      title
+      content
+      owner {
+        _id
+        user_name
+        email
+        filename
+      }
+      collaborators {
+        _id
+        user_name
+        email
+        filename
+      }
+    }
+  }
+}
+*/
+
+const unshareNoteWithUser = (
+  url: string | Application,
+  noteId: string,
+  userId: string,
+  token: string,
+): Promise<NoteTest> => {
+  return new Promise((resolve, reject) => {
+    request(url)
+      .post('/graphql')
+      .set('Content-type', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        query: `mutation UnshareNoteWithUser($noteId: ID!, $userId: ID!) {
+          unshareNoteWithUser(note_id: $noteId, user_id: $userId) {
+            message
+            note {
+              id
+              title
+              content
+              owner {
+                id
+                user_name
+                email
+                filename
+              }
+              collaborators {
+                id
+                user_name
+                email
+                filename
+              }
+            }
+          }
+        }`,
+        variables: {
+          noteId: noteId,
+          userId: userId,
+        },
+      })
+      .expect(200, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          const note = response.body.data.unshareNoteWithUser.note;
+          expect(note).toHaveProperty('id');
+          expect(note).toHaveProperty('title');
+          expect(note).toHaveProperty('content');
+          expect(note).toHaveProperty('owner');
+          expect(note.owner).toHaveProperty('id');
+          expect(note).toHaveProperty('collaborators');
+          expect(note.collaborators).toBeInstanceOf(Array);
+          resolve(note);
+        }
+      });
+  });
+};
+
+// add test for graphql query
+/*
 mutation DeleteNote($id: ID!) {
   deleteNote(id: $id) {
     message
@@ -418,9 +583,7 @@ const deleteNote = (
       .set('Authorization', `Bearer ${token}`)
       .send({
         query: `mutation DeleteNote($id: ID!) {
-          deleteNote(id: $id) {
-            message
-          }
+          deleteNote(id: $id) 
         }`,
         variables: {
           id: id,
@@ -443,5 +606,7 @@ export {
   getSharedNotes,
   createNote,
   updateNote,
+  shareNoteWithUser,
+  unshareNoteWithUser,
   deleteNote,
 };

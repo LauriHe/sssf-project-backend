@@ -17,6 +17,8 @@ import {
   getSharedNotes,
   createNote,
   updateNote,
+  shareNoteWithUser,
+  unshareNoteWithUser,
   deleteNote,
 } from './noteFunctions';
 import {
@@ -172,6 +174,11 @@ describe('Testing graphql api', () => {
     noteID1 = noteUploadData.id;
   });
 
+  it('should share note', async () => {
+    if (!userData2.user) throw new Error('No user in response');
+    await shareNoteWithUser(app, noteID1, userData2.user.id!, userData.token!);
+  });
+
   it('should return single note', async () => {
     await getSingleNote(app, noteID1, userData.token!);
   });
@@ -190,6 +197,16 @@ describe('Testing graphql api', () => {
       noteID1,
       noteData.title + ' Updated',
       noteData.content + ' Updated',
+      userData.token!,
+    );
+  });
+
+  it('should unshare note', async () => {
+    if (!userData2.user) throw new Error('No user in response');
+    await unshareNoteWithUser(
+      app,
+      noteID1,
+      userData2.user.id!,
       userData.token!,
     );
   });
@@ -255,8 +272,8 @@ describe('Testing graphql api', () => {
   it('should post a list', async () => {
     listUploadData = await createList(
       app,
-      listData.title,
       boardID1,
+      listData.title,
       userData.token!,
     );
     listID1 = listUploadData.id;

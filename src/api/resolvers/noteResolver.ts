@@ -26,21 +26,19 @@ export default {
     },
     ownedNotes: async (
       _parent: undefined,
+      args: {},
       contextValue: MyContext,
     ): Promise<Note[]> => {
-      console.log('testing');
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
-      console.log('testing2', contextValue.userdata.user);
-      const userId = contextValue.userdata.user;
-      console.log('omat');
+      const userId = contextValue.userdata.user.id;
       const notes = await noteModel
         .find({owner: userId})
         .populate('owner collaborators', '_id user_name email filename');
-      console.log('nootit', notes);
       return notes;
     },
     sharedNotes: async (
       _parent: undefined,
+      args: {},
       contextValue: MyContext,
     ): Promise<Note[]> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
@@ -87,15 +85,17 @@ export default {
       const noteInfo = await noteModel.findById(args.id);
       if (!noteInfo) throw new GraphQLError('Note not found');
       if (
-        noteInfo.owner._id !== userId &&
+        String(noteInfo.owner._id) !== userId &&
         !noteInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');
-      const response = await noteModel.findByIdAndUpdate(
-        args.id,
-        {title: args.title, content: args.content},
-        {new: true},
-      );
+      const response = await noteModel
+        .findByIdAndUpdate(
+          args.id,
+          {title: args.title, content: args.content},
+          {new: true},
+        )
+        .populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Note not updated');
       const newNote = {
         id: response._id,
@@ -115,7 +115,7 @@ export default {
       const userId = contextValue.userdata.user.id;
       const noteInfo = await noteModel.findById(args.id);
       if (!noteInfo) throw new GraphQLError('Note not found');
-      if (noteInfo.owner._id !== userId)
+      if (String(noteInfo.owner._id) !== userId)
         throw new GraphQLError('Not authorized');
       const response = await noteModel.findByIdAndDelete(args.id);
       if (!response) throw new GraphQLError('Note not deleted');
@@ -130,13 +130,15 @@ export default {
       const userId = contextValue.userdata.user.id;
       const noteInfo = await noteModel.findById(args.note_id);
       if (!noteInfo) throw new GraphQLError('Note not found');
-      if (noteInfo.owner._id !== userId)
+      if (String(noteInfo.owner._id) !== userId)
         throw new GraphQLError('Not authorized');
-      const response = await noteModel.findByIdAndUpdate(
-        args.note_id,
-        {$push: {collaborators: args.user_id}},
-        {new: true},
-      );
+      const response = await noteModel
+        .findByIdAndUpdate(
+          args.note_id,
+          {$push: {collaborators: args.user_id}},
+          {new: true},
+        )
+        .populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Note not shared');
       const newNote = {
         id: response._id,
@@ -156,13 +158,15 @@ export default {
       const userId = contextValue.userdata.user.id;
       const noteInfo = await noteModel.findById(args.note_id);
       if (!noteInfo) throw new GraphQLError('Note not found');
-      if (noteInfo.owner._id !== userId)
+      if (String(noteInfo.owner._id) !== userId)
         throw new GraphQLError('Not authorized');
-      const response = await noteModel.findByIdAndUpdate(
-        args.note_id,
-        {$pull: {collaborators: args.user_id}},
-        {new: true},
-      );
+      const response = await noteModel
+        .findByIdAndUpdate(
+          args.note_id,
+          {$pull: {collaborators: args.user_id}},
+          {new: true},
+        )
+        .populate('owner collaborators', '_id user_name email filename');
       if (!response) throw new GraphQLError('Note not unshared');
       const newNote = {
         id: response._id,

@@ -29,7 +29,10 @@ const getSingleCard = async (
         query: `query CardById($cardId: ID!) {
           cardById(id: $cardId) {
             id
-            list
+            list {
+              id
+              title
+            }
             title
             content
           }
@@ -42,6 +45,7 @@ const getSingleCard = async (
         if (err) {
           reject(err);
         } else {
+          console.log(response.body);
           const card = response.body.data.cardById;
           expect(card.id).toBe(id);
           expect(card).toHaveProperty('list');
@@ -80,7 +84,10 @@ const getCardsByList = async (
         query: `query CardsByList($listId: ID!) {
           cardsByList(list_id: $listId) {
             id
-            list
+            list {
+              id
+              title
+            }
             title
             content
           }
@@ -97,7 +104,7 @@ const getCardsByList = async (
           cards.forEach((card: CardTest) => {
             expect(card).toHaveProperty('id');
             expect(card).toHaveProperty('list');
-            expect(card.list).toBe(id);
+            expect(card.list?.id).toBe(id);
             expect(card).toHaveProperty('title');
             expect(card).toHaveProperty('content');
           });
@@ -140,7 +147,10 @@ const createCard = async (
             message
             card {
               id
-              list
+              list {
+                id
+                title
+              }
               title
               content
             }
@@ -158,7 +168,7 @@ const createCard = async (
         } else {
           const card = response.body.data.createCard.card;
           expect(card).toHaveProperty('id');
-          expect(card.list).toBe(listId);
+          expect(card.list.id).toBe(listId);
           expect(card.title).toBe(title);
           expect(card.content).toBe(content);
           resolve(card);
@@ -200,7 +210,10 @@ const updateCard = async (
             message
             card {
               id
-              list
+              list {
+                id
+                title
+              }
               title
               content
             }
@@ -248,9 +261,7 @@ const deleteCard = async (
       .set('Authorization', `Bearer ${token}`)
       .send({
         query: `mutation DeleteCard($id: ID!) {
-          deleteCard(id: $id) {
-            message
-          }
+          deleteCard(id: $id)
         }`,
         variables: {
           id: id,

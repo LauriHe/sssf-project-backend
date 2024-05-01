@@ -15,17 +15,21 @@ export default {
     ): Promise<Card> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const listInfo = await listModel.findById(args.id);
-      if (!listInfo) throw new GraphQLError('List not found');
-      const boardInfo = await boardModel.findById(listInfo.board);
+      const card = await cardModel.findById(args.id).populate('list');
+      if (!card) throw new GraphQLError('Card not found');
+      const list = await listModel
+        .findById(card.list._id)
+        .populate('board', '_id title');
+      if (!list) throw new GraphQLError('List not found');
+      const boardInfo = await boardModel
+        .findById(list.board._id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
       if (
-        boardInfo.owner._id !== userId &&
+        String(boardInfo.owner._id) !== userId &&
         !boardInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');
-      const card = await cardModel.findById(args.id);
-      if (!card) throw new GraphQLError('Card not found');
       return card;
     },
     cardsByList: async (
@@ -35,16 +39,20 @@ export default {
     ): Promise<Card[]> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const listInfo = await listModel.findById(args.list_id);
+      const listInfo = await listModel
+        .findById(args.list_id)
+        .populate('board', '_id title');
       if (!listInfo) throw new GraphQLError('List not found');
-      const boardInfo = await boardModel.findById(listInfo.board);
+      const boardInfo = await boardModel
+        .findById(listInfo.board._id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
       if (
-        boardInfo.owner._id !== userId &&
+        String(boardInfo.owner._id) !== userId &&
         !boardInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');
-      const cards = await cardModel.find({list: args.list_id});
+      const cards = await cardModel.find({list: args.list_id}).populate('list');
       if (!cards) throw new GraphQLError('Card not found');
       return cards;
     },
@@ -52,25 +60,30 @@ export default {
   Mutation: {
     createCard: async (
       _parent: undefined,
-      args: {list_id: string; title: string},
+      args: {list_id: string; title: string; content: string},
       contextValue: MyContext,
     ): Promise<CardMessage> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const listInfo = await listModel.findById(args.list_id);
+      const listInfo = await listModel
+        .findById(args.list_id)
+        .populate('board', '_id title');
       if (!listInfo) throw new GraphQLError('List not found');
-      const boardInfo = await boardModel.findById(listInfo.board);
+      const boardInfo = await boardModel
+        .findById(listInfo.board._id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
       if (
-        boardInfo.owner._id !== userId &&
+        String(boardInfo.owner._id) !== userId &&
         !boardInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');
       const input = {
         list: args.list_id,
         title: args.title,
+        content: args.content,
       };
-      const response = await cardModel.create(input);
+      const response = await (await cardModel.create(input)).populate('list');
       if (!response) throw new GraphQLError('Card not created');
       return {message: 'Card created', card: response};
     },
@@ -81,22 +94,28 @@ export default {
     ): Promise<CardMessage> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const cardInfo = await cardModel.findById(args.id);
+      const cardInfo = await cardModel.findById(args.id).populate('list');
       if (!cardInfo) throw new GraphQLError('Card not found');
-      const listInfo = await listModel.findById(cardInfo.list);
+      const listInfo = await listModel
+        .findById(cardInfo.list.id)
+        .populate('board', '_id title');
       if (!listInfo) throw new GraphQLError('List not found');
-      const boardInfo = await boardModel.findById(listInfo.board);
+      const boardInfo = await boardModel
+        .findById(listInfo.board._id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
       if (
-        boardInfo.owner._id !== userId &&
+        String(boardInfo.owner._id) !== userId &&
         !boardInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');
-      const response = await cardModel.findByIdAndUpdate(
-        args.id,
-        {title: args.title, content: args.content},
-        {new: true},
-      );
+      const response = await cardModel
+        .findByIdAndUpdate(
+          args.id,
+          {title: args.title, content: args.content},
+          {new: true},
+        )
+        .populate('list');
       if (!response) throw new GraphQLError('Card not updated');
       return {message: 'Card updated', card: response};
     },
@@ -107,14 +126,18 @@ export default {
     ): Promise<string> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const userId = contextValue.userdata.user.id;
-      const cardInfo = await cardModel.findById(args.id);
+      const cardInfo = await cardModel.findById(args.id).populate('list');
       if (!cardInfo) throw new GraphQLError('Card not found');
-      const listInfo = await listModel.findById(cardInfo.list);
+      const listInfo = await listModel
+        .findById(cardInfo.list.id)
+        .populate('board', '_id title');
       if (!listInfo) throw new GraphQLError('List not found');
-      const boardInfo = await boardModel.findById(listInfo.board);
+      const boardInfo = await boardModel
+        .findById(listInfo.board._id)
+        .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
       if (
-        boardInfo.owner._id !== userId &&
+        String(boardInfo.owner._id) !== userId &&
         !boardInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');

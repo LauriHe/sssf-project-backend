@@ -28,7 +28,10 @@ const getSingleList = async (
         query: `query ListById($listId: ID!) {
           listById(id: $listId) {
             id
-            board
+            board {
+              id
+              title
+            }
             title
           }
         }`,
@@ -76,7 +79,10 @@ const getListsByBoard = async (
         query: `query ListsByBoard($boardId: ID!) {
           listsByBoard(board_id: $boardId) {
             id
-            board
+            board {
+              id
+              title
+            }
             title
           }
         }`,
@@ -92,7 +98,7 @@ const getListsByBoard = async (
           lists.forEach((list: ListTest) => {
             expect(list).toHaveProperty('id');
             expect(list).toHaveProperty('board');
-            expect(list.board).toBe(id);
+            expect(list.board?.id).toBe(id);
             expect(list).toHaveProperty('title');
           });
           resolve(lists);
@@ -133,7 +139,10 @@ const createList = async (
             message
             list {
               id
-              board
+              board {
+                id
+                title
+              }
               title
             }
           }
@@ -149,7 +158,7 @@ const createList = async (
         } else {
           const list = response.body.data.createList.list;
           expect(list).toHaveProperty('id');
-          expect(list.board).toBe(boardId);
+          expect(list.board.id).toBe(boardId);
           expect(list.title).toBe(title);
           resolve(list);
         }
@@ -189,7 +198,10 @@ const updateList = async (
             message
             list {
               id
-              board
+              board {
+                id
+                title
+              }
               title
             }
           }
@@ -236,9 +248,7 @@ const deleteList = async (
       .set('Authorization', `Bearer ${token}`)
       .send({
         query: `mutation DeleteList($id: ID!) {
-          deleteList(id: $id) {
-            message
-          }
+          deleteList(id: $id)
         }`,
         variables: {
           id: id,
