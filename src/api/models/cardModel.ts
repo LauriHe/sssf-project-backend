@@ -10,10 +10,12 @@ const cardModel = new mongoose.Schema<Card>({
   title: {
     type: String,
     required: [true, 'Title is required'],
+    max: [100, 'Title must be shorter than 100 characters'],
   },
   content: {
     type: String,
     default: '',
+    max: [5000, 'Content must be shorter than 10000 characters'],
   },
 });
 

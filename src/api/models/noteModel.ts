@@ -19,10 +19,12 @@ const noteModel = new mongoose.Schema<Note>({
   title: {
     type: String,
     required: [true, 'Title is required'],
+    max: [100, 'Title must be shorter than 100 characters'],
   },
   content: {
     type: String,
     default: '',
+    max: [10000, 'Content must be shorter than 10000 characters'],
   },
 });
 
