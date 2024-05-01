@@ -45,7 +45,6 @@ const getSingleCard = async (
         if (err) {
           reject(err);
         } else {
-          console.log(response.body);
           const card = response.body.data.cardById;
           expect(card.id).toBe(id);
           expect(card).toHaveProperty('list');
