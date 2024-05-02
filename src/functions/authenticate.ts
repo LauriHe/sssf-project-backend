@@ -5,6 +5,7 @@ import {MyContext} from '../types/MyContext';
 
 export default async (req: Request): Promise<MyContext> => {
   const authHeader = req.headers.authorization;
+  console.log('authHeader', authHeader);
   if (authHeader) {
     try {
       const token = authHeader.split(' ')[1];

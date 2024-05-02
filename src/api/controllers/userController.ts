@@ -1,11 +1,3 @@
-// Description: This file contains the functions for the user routes
-// TODO: add function check, to check if the server is alive
-// TODO: add function to get all users
-// TODO: add function to get a user by id
-// TODO: add function to create a user
-// TODO: add function to update a user
-// TODO: add function to delete a user
-// TODO: add function to check if a token is valid
 import {Request, Response, NextFunction} from 'express';
 import {User, UserOutput} from '../../types/DBTypes';
 
@@ -13,37 +5,6 @@ import userModel from '../models/userModel';
 import CustomError from '../../classes/CustomError';
 import bcrypt from 'bcrypt';
 import MessageResponse from '../../interfaces/MessageResponse';
-
-const userListGet = async (
-  req: Request,
-  res: Response<User[]>,
-  next: NextFunction,
-) => {
-  try {
-    const users = await userModel.find().select('-password -__v');
-    res.json(users);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const userGet = async (
-  req: Request<{id: string}, {}, {}>,
-  res: Response<User>,
-  next: NextFunction,
-) => {
-  try {
-    const user = await userModel
-      .findById(req.params.id)
-      .select('-password -__v');
-    if (!user) {
-      throw new CustomError('No species found', 404);
-    }
-    res.json(user);
-  } catch (error) {
-    next(error);
-  }
-};
 
 const userPost = async (
   req: Request<{}, {}, Omit<User, 'id'>>,
@@ -72,42 +33,27 @@ const userPost = async (
 };
 
 const userPut = async (
-  req: Request<{id: string}, {}, Omit<User, 'user_id'>>,
-  res: Response<MessageResponse & {data: User}>,
+  req: Request<{}, {}, User>,
+  res: Response<MessageResponse & {user: User}>,
   next: NextFunction,
 ) => {
   try {
+    console.log('testing');
+    req.body.password = bcrypt.hashSync(req.body.password, 10);
     const user = await userModel
-      .findByIdAndUpdate(req.params.id, req.body, {
+      .findByIdAndUpdate(req.body._id, req.body, {
         new: true,
       })
       .select('-password -__v');
     if (!user) {
       throw new CustomError('No user found', 404);
     }
+    console.log('testing2', user);
     const response = {
       message: 'User updated',
-      data: user,
+      user: user,
     };
     res.json(response);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const userDelete = async (
-  req: Request<{id: string}, {}, {}>,
-  res: Response<MessageResponse>,
-  next: NextFunction,
-) => {
-  try {
-    const user = await userModel
-      .findByIdAndDelete(req.params.id)
-      .select('-password -__v');
-    if (!user) {
-      throw new CustomError('No user found', 404);
-    }
-    res.json({message: 'User deleted'});
   } catch (error) {
     next(error);
   }
@@ -120,7 +66,7 @@ const checkToken = (
 ) => {
   try {
     const user: UserOutput = {
-      id: res.locals.user._id,
+      id: res.locals.user.id,
       user_name: res.locals.user.user_name,
       email: res.locals.user.email,
       filename: res.locals.user.filename,
@@ -134,4 +80,4 @@ const checkToken = (
   }
 };
 
-export {userListGet, userGet, userPost, userPut, userDelete, checkToken};
+export {userPost, userPut, checkToken};

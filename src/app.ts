@@ -25,6 +25,7 @@ const app = express();
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
     contentSecurityPolicy: false,
   }),
 );
@@ -56,7 +57,7 @@ app.use(
       },
       Mutation: {
         login: rateLimitRule({max: 5, window: '10m'}),
-        register: rateLimitRule({max: 1, window: '1m'}),
+        register: rateLimitRule({max: 5, window: '1m'}),
         updateUser: rateLimitRule({max: 10, window: '1m'}),
         deleteUser: rateLimitRule({max: 10, window: '1m'}),
         createNote: rateLimitRule({max: 20, window: '1m'}),
@@ -108,8 +109,10 @@ app.use(
         context: async ({req}) => authenticate(req),
       }),
     );
-    app.use(express.json());
-    app.use('/api', api);
+
+    app.use(cors());
+    app.use('/api', express.json(), api);
+    app.use('/uploads', express.static('uploads'));
     app.use(notFound);
     app.use(errorHandler);
   } catch (error) {

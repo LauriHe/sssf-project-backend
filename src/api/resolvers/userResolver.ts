@@ -32,7 +32,7 @@ export default {
       _parent: undefined,
       args: {token: string},
     ): Promise<UserMessage> => {
-      const url = process.env.AUTH_URL + '/api/v1/users/token';
+      const url = process.env.AUTH_URL + 'users/token';
       const options = {
         method: 'GET',
         headers: {
@@ -88,26 +88,26 @@ export default {
     ): Promise<UserMessage> => {
       if (!contextValue.userdata) throw new GraphQLError('Not authenticated');
       const id = contextValue.userdata.user.id;
-      const response = await userModel.findByIdAndUpdate(
-        id,
-        {
-          user_name: args.user.user_name,
-          email: args.user.email,
-          password: args.user.password,
-          filename: args.user.filename,
+      args.user._id = id;
+      const url = process.env.AUTH_URL + 'users/';
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + contextValue.userdata.token,
         },
-        {
-          new: true,
-        },
-      );
-      if (!response) throw new GraphQLError('User not found');
-      const user: UserOutput = {
-        email: response.email,
-        id: response._id,
-        user_name: response.user_name,
-        filename: response.filename,
+        body: JSON.stringify(args.user),
       };
-      return {message: 'User updated', user};
+      const response: UserMessage = await fetchData(url, options);
+      if (!response.user) throw new GraphQLError('User not found');
+      const user: UserOutput = {
+        id: response.user._id,
+        user_name: response.user.user_name,
+        email: response.user.email,
+        filename: response.user.filename,
+      };
+
+      return {message: 'User updated', user: user};
     },
     deleteUser: async (
       _parent: undefined,

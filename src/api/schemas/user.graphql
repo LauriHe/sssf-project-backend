@@ -32,13 +32,14 @@ input UserModify {
   user_name: String
   email: String
   password: String
+  filename: String
 }
 
 type Query {
   users: [User]
   userById(id: ID!): User
   userByName(user_name: String!): User
-  checkToken: UserMessage
+  checkToken(token: String!): UserMessage
 }
 
 type Mutation {
