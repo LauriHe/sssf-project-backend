@@ -56,7 +56,7 @@ app.use(
         cardsByList: rateLimitRule({max: 500, window: '1m'}),
       },
       Mutation: {
-        login: rateLimitRule({max: 5, window: '10m'}),
+        login: rateLimitRule({max: 50, window: '10m'}),
         register: rateLimitRule({max: 5, window: '1m'}),
         updateUser: rateLimitRule({max: 10, window: '1m'}),
         deleteUser: rateLimitRule({max: 10, window: '1m'}),
