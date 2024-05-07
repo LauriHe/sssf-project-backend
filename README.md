@@ -94,5 +94,5 @@ If you want to install and run the application locally on your own machine then 
 7. Run `npm run dev` in the frontend directory
 8. `ctrl + click` the link or go to `http://localhost:5173/` to test the application
 
-## Feedback
+## Feedback ✏️
 Please give some feedback about the application and readme.md: https://forms.gle/t8GyefsvF5GpqkmE9
