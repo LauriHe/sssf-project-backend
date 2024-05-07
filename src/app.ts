@@ -40,10 +40,10 @@ app.use(
     // TODO Create a permissions object (not WSK2 course)
     const permissions = shield({
       Query: {
-        users: rateLimitRule({max: 20, window: '1m'}),
-        userById: rateLimitRule({max: 20, window: '1m'}),
-        userByName: rateLimitRule({max: 20, window: '1m'}),
-        checkToken: rateLimitRule({max: 20, window: '1m'}),
+        users: rateLimitRule({max: 500, window: '1m'}),
+        userById: rateLimitRule({max: 500, window: '1m'}),
+        userByName: rateLimitRule({max: 500, window: '1m'}),
+        checkToken: rateLimitRule({max: 500, window: '1m'}),
         noteById: rateLimitRule({max: 500, window: '1m'}),
         ownedNotes: rateLimitRule({max: 500, window: '1m'}),
         sharedNotes: rateLimitRule({max: 500, window: '1m'}),
@@ -56,8 +56,8 @@ app.use(
         cardsByList: rateLimitRule({max: 500, window: '1m'}),
       },
       Mutation: {
-        login: rateLimitRule({max: 50, window: '10m'}),
-        register: rateLimitRule({max: 5, window: '1m'}),
+        login: rateLimitRule({max: 10, window: '1m'}),
+        register: rateLimitRule({max: 10, window: '1m'}),
         updateUser: rateLimitRule({max: 10, window: '1m'}),
         deleteUser: rateLimitRule({max: 10, window: '1m'}),
         createNote: rateLimitRule({max: 20, window: '1m'}),

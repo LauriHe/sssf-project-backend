@@ -40,7 +40,12 @@ export default {
         },
       };
       const response: UserOutput = await fetchData(url, options);
-      return {message: 'Token is valid', user: response};
+      if (!response.id) throw new GraphQLError('Token is invalid');
+      const userResponse: UserOutput = await userModel
+        .findById(response.id)
+        .select('-password');
+      if (!userResponse) throw new GraphQLError('User not found');
+      return {message: 'Token is valid', user: userResponse};
     },
   },
   Mutation: {

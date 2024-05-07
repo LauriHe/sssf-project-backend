@@ -17,10 +17,11 @@ export default {
         .findById(args.id)
         .populate('owner collaborators', '_id user_name email filename');
       if (!note) throw new GraphQLError('Note not found');
-      if (
-        String(note.owner._id) !== userId &&
-        !note.collaborators.includes(userId)
-      )
+      // check if collaborators include userId
+      const isCollaborator = note.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(note.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       return note;
     },
@@ -89,6 +90,9 @@ export default {
         !noteInfo.collaborators.includes(userId)
       )
         throw new GraphQLError('Not authorized');
+      console.log('userid: ', userId);
+      console.log(noteInfo.collaborators);
+      console.log('includes: ', noteInfo.collaborators.includes(userId));
       const response = await noteModel
         .findByIdAndUpdate(
           args.id,

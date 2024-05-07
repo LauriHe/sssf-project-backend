@@ -22,10 +22,10 @@ export default {
         .findById(list.board)
         .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (
-        String(boardInfo.owner._id) !== userId &&
-        !boardInfo.collaborators.includes(userId)
-      )
+      const isCollaborator = boardInfo.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(boardInfo.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       return list;
     },
@@ -40,10 +40,10 @@ export default {
         .findById(args.board_id)
         .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (
-        String(boardInfo.owner._id) !== userId &&
-        !boardInfo.collaborators.includes(userId)
-      )
+      const isCollaborator = boardInfo.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(boardInfo.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       const lists = await listModel
         .find({board: args.board_id})
@@ -64,10 +64,10 @@ export default {
         .findById(args.board_id)
         .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (
-        String(boardInfo.owner._id) !== userId &&
-        !boardInfo.collaborators.includes(userId)
-      )
+      const isCollaborator = boardInfo.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(boardInfo.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       const input = {
         board: args.board_id,
@@ -97,10 +97,10 @@ export default {
         .findById(listInfo.board)
         .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (
-        String(boardInfo.owner._id) !== userId &&
-        !boardInfo.collaborators.includes(userId)
-      )
+      const isCollaborator = boardInfo.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(boardInfo.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       const response = await listModel
         .findByIdAndUpdate(args.id, {title: args.title}, {new: true})
@@ -126,10 +126,10 @@ export default {
         .findById(listInfo.board)
         .populate('owner collaborators', '_id user_name email filename');
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (
-        String(boardInfo.owner._id) !== userId &&
-        !boardInfo.collaborators.includes(userId)
-      )
+      const isCollaborator = boardInfo.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(boardInfo.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       const response = await listModel.findByIdAndDelete(args.id);
       if (!response) throw new GraphQLError('List not deleted');

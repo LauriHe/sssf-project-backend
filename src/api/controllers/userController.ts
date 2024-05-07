@@ -38,8 +38,9 @@ const userPut = async (
   next: NextFunction,
 ) => {
   try {
-    console.log('testing');
-    req.body.password = bcrypt.hashSync(req.body.password, 10);
+    if (req.body.password) {
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+    }
     const user = await userModel
       .findByIdAndUpdate(req.body._id, req.body, {
         new: true,
@@ -48,7 +49,6 @@ const userPut = async (
     if (!user) {
       throw new CustomError('No user found', 404);
     }
-    console.log('testing2', user);
     const response = {
       message: 'User updated',
       user: user,

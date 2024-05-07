@@ -17,10 +17,10 @@ export default {
         .findById(args.id)
         .populate('owner collaborators', '_id user_name email filename');
       if (!board) throw new GraphQLError('Board not found');
-      if (
-        String(board.owner._id) !== userId &&
-        !board.collaborators.includes(userId)
-      )
+      const isCollaborator = board.collaborators.some((collaborator) => {
+        return String(collaborator._id) === userId;
+      });
+      if (String(board.owner._id) !== userId && !isCollaborator)
         throw new GraphQLError('Not authorized');
       return board;
     },
@@ -82,7 +82,10 @@ export default {
       const userId = contextValue.userdata.user.id;
       const boardInfo = await boardModel.findById(args.id);
       if (!boardInfo) throw new GraphQLError('Board not found');
-      if (String(boardInfo.owner._id) !== userId)
+      if (
+        String(boardInfo.owner._id) !== userId &&
+        !boardInfo.collaborators.includes(userId)
+      )
         throw new GraphQLError('Not authorized');
       const response = await boardModel
         .findByIdAndUpdate(args.id, {title: args.title}, {new: true})
