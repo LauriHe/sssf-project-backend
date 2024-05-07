@@ -88,7 +88,11 @@ If you want to install and run the application locally on your own machine then 
 >     VITE_API_URL=http://localhost:5173/graphql
 >     VITE_UPLOAD_URL=http://localhost:5173/api/upload
 >     VITE_FILE_URL=http://localhost:5173/uploads
+
 5. Run `npm i` in both directories
 6. Run `npm start` in the backend directory
 7. Run `npm run dev` in the frontend directory
 8. `ctrl + click` the link or go to `http://localhost:5173/` to test the application
+
+## Feedback
+Please give some feedback about the application and readme.md: https://forms.gle/t8GyefsvF5GpqkmE9
